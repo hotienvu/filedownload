@@ -1,4 +1,4 @@
-package com.vho.filedownload;
+package com.vho.filedownload.downloader;
 
 import com.sun.net.httpserver.HttpServer;
 import org.junit.AfterClass;
