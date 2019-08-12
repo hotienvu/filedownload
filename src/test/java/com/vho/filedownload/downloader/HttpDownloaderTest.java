@@ -12,17 +12,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystemException;
+import java.util.HashMap;
 
+import static com.vho.filedownload.downloader.DownloadTask.DOWNLOAD_TARGET_DIR_OPT_KEY;
+import static com.vho.filedownload.downloader.DownloadTask.DOWNLOAD_TMP_DIR_OPT_KEY;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.isA;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-public class DownloadHttpTest {
+public class HttpDownloaderTest {
 
   private static HttpServer httpServer;
   private static byte[] response = "Hello, world".getBytes();
+  private static Downloader downloader = new HttpDownloader();
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -45,27 +51,18 @@ public class DownloadHttpTest {
     httpServer.stop(0);
   }
 
-  private DownloadTask download(String url, String targetDir) {
-    return DownloadTask.fromURL(url)
+  private File download(String url, String targetDir, String tmpDir) throws DownloadTask.FileDownloadException, URISyntaxException {
+    DownloadTask task = DownloadTask.fromURL(url)
       .targetDir(targetDir)
+      .tmpDir(tmpDir)
       .create();
-  }
 
-  @Test
-  public void testTaskCreation() {
-    final DownloadTask task = download("http://example.com/filename", "/download");
-    assertEquals(task.getTargetDir(), "/download");
-    assertEquals(task.getURL(), "http://example.com/filename");
+      return downloader.download(task);
   }
 
   @Test
   public void testDownloadSuccess() throws Exception {
-    final DownloadTask task = DownloadTask.fromURL("http://localhost:8000/file")
-      .targetDir("./target")
-      .tmpDir("./target")
-      .create();
-
-    File output = task.call();
+    File output = download("http://localhost:8000/file", "./target", "./target");
     byte[] expected = new byte[response.length];
     new FileInputStream(output).read(expected, 0, response.length);
     assertArrayEquals(response, expected);
@@ -73,40 +70,25 @@ public class DownloadHttpTest {
 
   @Test
   public void testDownloadLinkNotFound() throws Exception {
-    final DownloadTask task = DownloadTask.fromURL("http://localhost:8000/notfound")
-      .targetDir("./target")
-      .tmpDir("./target")
-      .create();
-
     thrown.expect(DownloadTask.FileDownloadException.class);
     thrown.expectCause(isA(IOException.class));
     thrown.expectMessage(containsString("HTTP/1.1 404 Not Found"));
-    task.call();
+    download("http://localhost:8000/notfound", "./target", "./target");
   }
 
   @Test
   public void testDownloadLinkNotAFile() throws Exception {
-    final DownloadTask task = DownloadTask.fromURL("http://localhost:8000/")
-      .targetDir("./target")
-      .tmpDir("./target")
-      .create();
-
     thrown.expect(DownloadTask.FileDownloadException.class);
     thrown.expectCause(isA(NullPointerException.class));
     thrown.expectMessage(containsString("Failed to parse"));
-    task.call();
+    download("http://localhost:8000/", "./target", "./target");
   }
 
   @Test
   public void testDownloadUnableToSave() throws Exception {
-    final DownloadTask task = DownloadTask.fromURL("http://localhost:8000/file")
-      .targetDir("./foo")
-      .tmpDir("./target")
-      .create();
-
     thrown.expect(DownloadTask.FileDownloadException.class);
     thrown.expectCause(isA(FileSystemException.class));
     thrown.expectMessage(containsString("Failed to save to"));
-    task.call();
+    download("http://localhost:8000/file", "./foo", "./target");
   }
 }

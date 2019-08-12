@@ -1,9 +1,15 @@
 package com.vho.filedownload;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.*;
 
 class WorkerPool {
+  private static final Logger LOG = LoggerFactory.getLogger(WorkerPool.class);
+
+
   private final ExecutorService pool;
 
   // for mockito
@@ -20,18 +26,30 @@ class WorkerPool {
       try {
         return task.call();
       } catch (Exception e) {
+        LOG.error("Failed to execute task ", e);
         throw new RuntimeException(e.getMessage(), e.getCause());
       }
     }, pool);
   }
 
+  // mostly borrowed from Guava's shutdownAndAwaitTermination
   void shutdown(long timeout, TimeUnit unit) {
     pool.shutdown();
     try {
-      System.out.println("Awaiting worker pool to be completely shutdown...");
-      pool.awaitTermination(timeout, unit);
+      LOG.info("Awaiting worker pool to be completely shutdown...");
+      // wait for half of time for all task to finish
+      if (!pool.awaitTermination(timeout/2, unit)) {
+        LOG.info("Forcing worker pool shutdown...");
+        // kill all running task
+        pool.shutdownNow();
+        // wait for half of time for task to be killed
+        pool.awaitTermination(timeout/2, unit);
+      }
+      LOG.info("Worker pool stopped.");
     } catch (InterruptedException e) {
-      System.out.println("Forcing worker pool shutdown...");
+      // Preserve interrupt status
+      Thread.currentThread().interrupt();
+      // (Re-)Cancel if current thread also interrupted
       pool.shutdownNow();
     }
   }

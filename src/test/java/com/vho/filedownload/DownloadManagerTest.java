@@ -1,11 +1,14 @@
 package com.vho.filedownload;
 
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +41,7 @@ public class DownloadManagerTest {
     when(pool.submit(any())).thenReturn(CompletableFuture.completedFuture(tempFile));
 
     mgr = new DownloadManager(pool);
-    assertEquals(mgr.download(url).get(), tempFile);
+    assertEquals(mgr.download(url, Collections.emptyMap()).get(), tempFile);
   }
 
   @Test
@@ -55,7 +58,7 @@ public class DownloadManagerTest {
     thrown.expectMessage("Error while downloading file");
 
     mgr = new DownloadManager(pool);
-    mgr.download(url).get();
+    mgr.download(url, Collections.emptyMap()).get();
   }
 
   @Test

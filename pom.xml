@@ -9,7 +9,9 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <jdk.version>1.8</jdk.version>
         <scala.version>2.11.7</scala.version>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
     <build>
@@ -19,9 +21,29 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${jdk.version}</source>
+                    <target>${jdk.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.vho.filedownload.FileDownloaderMain</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -31,10 +53,17 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.9</version>
         </dependency>
+
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
             <version>1.72</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
 
         <!--test dependencies -->
@@ -48,6 +77,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>2.28.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

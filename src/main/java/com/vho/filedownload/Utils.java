@@ -24,4 +24,10 @@ public class Utils {
         collect(Collectors.toList())
     );
   }
+
+  public static <T> CompletableFuture<T> failedFuture(Throwable e) {
+    CompletableFuture<T> future = new CompletableFuture<>();
+    future.completeExceptionally(e);
+    return future;
+  }
 }
