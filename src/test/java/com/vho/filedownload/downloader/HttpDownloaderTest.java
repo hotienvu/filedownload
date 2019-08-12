@@ -12,17 +12,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystemException;
-import java.util.HashMap;
 
-import static com.vho.filedownload.downloader.DownloadTask.DOWNLOAD_TARGET_DIR_OPT_KEY;
-import static com.vho.filedownload.downloader.DownloadTask.DOWNLOAD_TMP_DIR_OPT_KEY;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.isA;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
 
 public class HttpDownloaderTest {
 

@@ -4,7 +4,6 @@ import com.vho.filedownload.downloader.DownloadTask;
 import com.vho.filedownload.downloader.Downloader;
 
 import java.io.File;
-import java.util.Map;
 
 public class DefaultDownloader implements Downloader {
   @Override

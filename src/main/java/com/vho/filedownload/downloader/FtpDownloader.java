@@ -1,7 +1,6 @@
 package com.vho.filedownload.downloader;
 
 import java.io.File;
-import java.util.Map;
 
 public class FtpDownloader implements Downloader {
   public FtpDownloader() {

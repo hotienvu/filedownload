@@ -6,7 +6,6 @@ import org.junit.rules.ExpectedException;
 
 import java.net.URISyntaxException;
 
-import static com.vho.filedownload.downloader.DownloadTask.DOWNLOAD_URL_SCHEME_PREFIX_OPT_KEY;
 import static org.junit.Assert.assertEquals;
 
 public class DownloadTaskTest {

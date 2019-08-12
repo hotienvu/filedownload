@@ -1,20 +1,15 @@
 package com.vho.filedownload.downloader;
 
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import static com.vho.filedownload.Utils.checkNotNull;
 
 public class DownloadTask {
 
-  public static String DOWNLOAD_TMP_DIR_OPT_KEY = "download.dir.tmp";
   public static String DOWNLOAD_TMP_DIR_OPT_DEFAULT_VAL = "/tmp";
-
-  public static String DOWNLOAD_TARGET_DIR_OPT_KEY = "download.dir.target";
   public static String DOWNLOAD_TARGET_DIR_OPT_DEFAULT_VAL = "/tmp";
 
   /**
