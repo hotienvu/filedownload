@@ -106,6 +106,15 @@ class DownloadManager {
   synchronized
   public void shutdown(long timeout, TimeUnit unit) {
     if (!terminated) {
+      LOG.info("Closing all downloaders");
+      for (Downloader d: downloaders.values()) {
+        try {
+          d.close();
+        } catch (Exception e) {
+          LOG.error("Failed to close downloader ", e);
+        }
+      }
+
       LOG.info("Shutting down Download Manager...");
       terminated = true;
       workerPool.shutdown(timeout, unit);

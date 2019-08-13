@@ -10,4 +10,9 @@ public class FtpDownloader implements Downloader {
   public File download(DownloadTask task) throws DownloadTask.FileDownloadException {
     return null;
   }
+
+  @Override
+  public void close() throws Exception {
+
+  }
 }

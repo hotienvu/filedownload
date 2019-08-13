@@ -37,6 +37,7 @@ public class HttpDownloader implements Downloader {
     HttpUriRequest getReq = new HttpGet(task.getUrl());
 
     final File tmpFile = Paths.get(task.getTmpDir(), fileName + ".download").toFile();
+    final File result = Paths.get(task.getTargetDir(), fileName).toFile();
     tmpFile.deleteOnExit();
     try (CloseableHttpResponse response = client.execute(getReq);
          InputStream is = response.getEntity().getContent();
@@ -54,15 +55,23 @@ public class HttpDownloader implements Downloader {
         os.write(buffer, 0, read);
       }
 
-      File result = Paths.get(task.getTargetDir(), fileName).toFile();
       if (tmpFile.renameTo(result)) {
         LOG.info("Successfully downloaded to " + result.getAbsolutePath());
-        return result;
       } else {
         throw new FileSystemException("Failed to save to " + result.getAbsolutePath());
       }
     } catch (IOException e) {
       throw new FileDownloadException("Failed to download from: " + task + "Cause: " + e.getMessage(), e);
+    } finally {
+      tmpFile.delete();
+    }
+    return result;
+  }
+
+  @Override
+  public void close() throws Exception {
+    if (client != null) {
+      client.close();
     }
   }
 }

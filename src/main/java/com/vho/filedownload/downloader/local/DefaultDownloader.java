@@ -32,4 +32,9 @@ public class DefaultDownloader implements Downloader {
       throw new DownloadTask.FileDownloadException("Failed to copy file " + task.getUrl() + " to " + task.getTargetDir(), e);
     }
   }
+
+  @Override
+  public void close() throws Exception {
+    // nothing to do here
+  }
 }
